@@ -1,123 +1,49 @@
 <template>
   <div class="container">
     <h1 class="text-center">Analysis Data Dashboard</h1>
-
-    <!-- Top Sensor Speeds -->
     <div class="card">
-      <h2>Top Sensor Speeds</h2>
-      <form @submit.prevent="fetchTopSensors">
-        <label>
-          Start Time:
-          <input type="datetime-local" v-model="topSensorsStartTime" required>
-        </label>
-        <label>
-          End Time:
-          <input type="datetime-local" v-model="topSensorsEndTime" required>
-        </label>
-        <label>
-          Top N Sensors:
-          <input type="number" v-model.number="topNSensors" required>
-        </label>
-        <button type="submit">Fetch</button>
+      <form @submit.prevent="fetchData">
+        <div class="form-group">
+          <label>Start Time:</label>
+          <input type="datetime-local" v-model="startTime" required>
+        </div>
+        <div class="form-group">
+          <label>End Time:</label>
+          <input type="datetime-local" v-model="endTime" required>
+        </div>
+        <div class="form-group">
+          <label>Top N Sensors:</label>
+          <input type="number" v-model.number="topNSensors">
+        </div>
+        <div class="form-group">
+          <label>Bottom N Sensors:</label>
+          <input type="number" v-model.number="bottomNSensors">
+        </div>
+        <div class="form-group">
+          <label>Top N Streets:</label>
+          <input type="number" v-model.number="topNStreets">
+        </div>
+        <div class="form-group">
+          <label>Bottom N Streets:</label>
+          <input type="number" v-model.number="bottomNStreets">
+        </div>
+        <div class="form-group">
+          <label>Sensor ID:</label>
+          <input type="text" v-model="sensorid" placeholder="Sensor ID">
+        </div>
+        <div class="form-group">
+          <label>Street:</label>
+          <input type="text" v-model="street" placeholder="Street">
+        </div>
+        <button type="submit">Fetch Data</button>
       </form>
-      <img v-if="topSensorsImage" :src="topSensorsImage" alt="Top Sensors" class="result-image">
-    </div>
 
-    <!-- Bottom Sensor Speeds -->
-    <div class="card">
-      <h2>Bottom Sensor Speeds</h2>
-      <form @submit.prevent="fetchBottomSensors">
-        <label>
-          Start Time:
-          <input type="datetime-local" v-model="bottomSensorsStartTime" required>
-        </label>
-        <label>
-          End Time:
-          <input type="datetime-local" v-model="bottomSensorsEndTime" required>
-        </label>
-        <label>
-          Bottom N Sensors:
-          <input type="number" v-model.number="bottomNSensors" required>
-        </label>
-        <button type="submit">Fetch</button>
-      </form>
-      <img v-if="bottomSensorsImage" :src="bottomSensorsImage" alt="Bottom Sensors" class="result-image">
-    </div>
-
-    <!-- Top Street Speeds -->
-    <div class="card">
-      <h2>Top Street Speeds</h2>
-      <form @submit.prevent="fetchTopStreets">
-        <label>
-          Timestep:
-          <input type="datetime-local" v-model="topStreetsTimestep" required>
-        </label>
-        <label>
-          Top N Streets:
-          <input type="number" v-model.number="topNStreets" required>
-        </label>
-        <button type="submit">Fetch</button>
-      </form>
-      <img v-if="topStreetsImage" :src="topStreetsImage" alt="Top Streets" class="result-image">
-    </div>
-
-    <!-- Bottom Street Speeds -->
-    <div class="card">
-      <h2>Bottom Street Speeds</h2>
-      <form @submit.prevent="fetchBottomStreets">
-        <label>
-          Timestep:
-          <input type="datetime-local" v-model="bottomStreetsTimestep" required>
-        </label>
-        <label>
-          Bottom N Streets:
-          <input type="number" v-model.number="bottomNStreets" required>
-        </label>
-        <button type="submit">Fetch</button>
-      </form>
-      <img v-if="bottomStreetsImage" :src="bottomStreetsImage" alt="Bottom Streets" class="result-image">
-    </div>
-
-    <!-- Sensor Speed Plot -->
-    <div class="card">
-      <h2>Sensor Speed Plot</h2>
-      <form @submit.prevent="fetchSensorSpeed">
-        <label>
-          Sensor ID:
-          <input type="text" v-model="sensorid" placeholder="Sensor ID" required>
-        </label>
-        <label>
-          Start Time:
-          <input type="datetime-local" v-model="sensorStartTime" required>
-        </label>
-        <label>
-          End Time:
-          <input type="datetime-local" v-model="sensorEndTime" required>
-        </label>
-        <button type="submit">Fetch</button>
-      </form>
-      <img v-if="sensorSpeedImage" :src="sensorSpeedImage" alt="Sensor Speed" class="result-image">
-    </div>
-
-    <!-- Street Speed Plot -->
-    <div class="card">
-      <h2>Street Speed Plot</h2>
-      <form @submit.prevent="fetchStreetSpeed">
-        <label>
-          Street:
-          <input type="text" v-model="street" placeholder="Street" required>
-        </label>
-        <label>
-          Start Time:
-          <input type="datetime-local" v-model="streetStartTime" required>
-        </label>
-        <label>
-          End Time:
-          <input type="datetime-local" v-model="streetEndTime" required>
-        </label>
-        <button type="submit">Fetch</button>
-      </form>
-      <img v-if="streetSpeedImage" :src="streetSpeedImage" alt="Street Speed" class="result-image">
+      <div v-if="images.length">
+        <div v-for="(image, index) in images" :key="index" class="result-image-container">
+          <img :src="image.src" :alt="image.alt" class="result-image">
+          <p>{{ image.title }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -128,60 +54,90 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      // Top Sensors
-      topSensorsStartTime: '2017-01-01 00:00:00',
-      topSensorsEndTime: '2017-01-01 00:00:00',
-      topNSensors: 10,
-      topSensorsImage: null,
-
-      // Bottom Sensors
-      bottomSensorsStartTime: '2017-01-01 00:00:00',
-      bottomSensorsEndTime: '2017-01-01 00:00:00',
-      bottomNSensors: 10,
-      bottomSensorsImage: null,
-
-      // Top Streets
-      topStreetsTimestep: '',
-      topNStreets: 5,
-      topStreetsImage: null,
-
-      // Bottom Streets
-      bottomStreetsTimestep: '',
-      bottomNStreets: 5,
-      bottomStreetsImage: null,
-
-      // Sensor Speed Plot
+      startTime: '2017-01-01 00:00:00',
+      endTime: '2017-01-01 00:00:00',
+      topNSensors: null,
+      bottomNSensors: null,
+      topNStreets: null,
+      bottomNStreets: null,
       sensorid: '',
-      sensorStartTime: '2017-01-01 00:00:00',
-      sensorEndTime: '2017-01-01 00:00:00',
-      sensorSpeedImage: null,
-
-      // Street Speed Plot
       street: '',
-      streetStartTime: '2017-01-01 00:00:00',
-      streetEndTime: '2017-01-01 00:00:00',
-      streetSpeedImage: null,
+      images: [],
     };
   },
   methods: {
     roundMinutesToNearest5(datetime) {
-      const date = new Date(datetime);
-      const minutes = date.getMinutes();
-      const roundedMinutes = Math.round(minutes / 5) * 5;
-      date.setMinutes(roundedMinutes, 0, 0);
-      return date.toISOString().slice(0, 16).replace('T', ' ');
+      // 去掉时间字符串中的T
+      let dateStr = datetime.replace('T', ' ');
+
+      // 将日期和时间部分分开
+      let [datePart, timePart] = dateStr.split(' ');
+
+      // 将时间部分分成小时和分钟
+      let [hours, minutes] = timePart.split(':').map(Number);
+
+      // 四舍五入到最近的5分钟
+      let roundedMinutes = Math.round(minutes / 5) * 5;
+
+      // 如果四舍五入后的分钟数超过了59，需要处理小时和天数
+      if (roundedMinutes === 60) {
+        roundedMinutes = 0;
+        hours += 1;
+        if (hours === 24) {
+          hours = 0;
+          // 简单处理日期部分，假设每月有30天
+          let [year, month, day] = datePart.split('-').map(Number);
+          day += 1;
+          if (day > 30) {
+            day = 1;
+            month += 1;
+            if (month > 12) {
+              month = 1;
+              year += 1;
+            }
+          }
+          datePart = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        }
+      }
+
+      // 构造新的时间部分字符串
+      let newTimePart = `${hours.toString().padStart(2, '0')}:${roundedMinutes.toString().padStart(2, '0')}`;
+
+      // 返回新的日期时间字符串
+      return `${datePart} ${newTimePart}`;
+    },
+    async fetchData() {
+      this.images = [];
+      if (this.topNSensors) {
+        await this.fetchTopSensors();
+      }
+      if (this.bottomNSensors) {
+        await this.fetchBottomSensors();
+      }
+      if (this.topNStreets) {
+        await this.fetchTopStreets();
+      }
+      if (this.bottomNStreets) {
+        await this.fetchBottomStreets();
+      }
+      if (this.sensorid) {
+        await this.fetchSensorSpeed();
+      }
+      if (this.street) {
+        await this.fetchStreetSpeed();
+      }
     },
     async fetchTopSensors() {
       try {
         const response = await axios.get('http://127.0.0.1:5000/avg_top_sensors', {
           params: {
-            start_time: this.roundMinutesToNearest5(this.topSensorsStartTime),
-            end_time: this.roundMinutesToNearest5(this.topSensorsEndTime),
+            start_time: this.roundMinutesToNearest5(this.startTime),
+            end_time: this.roundMinutesToNearest5(this.endTime),
             n: this.topNSensors
           },
           responseType: 'blob'
         });
-        this.topSensorsImage = URL.createObjectURL(response.data);
+        this.images.push({ src: URL.createObjectURL(response.data), alt: 'Top Sensors', title: 'Top Sensors' });
       } catch (error) {
         console.error('Error fetching top sensors:', error);
       }
@@ -190,13 +146,13 @@ export default {
       try {
         const response = await axios.get('http://127.0.0.1:5000/avg_bottom_sensors', {
           params: {
-            start_time: this.roundMinutesToNearest5(this.bottomSensorsStartTime),
-            end_time: this.roundMinutesToNearest5(this.bottomSensorsEndTime),
+            start_time: this.roundMinutesToNearest5(this.startTime),
+            end_time: this.roundMinutesToNearest5(this.endTime),
             n: this.bottomNSensors
           },
           responseType: 'blob'
         });
-        this.bottomSensorsImage = URL.createObjectURL(response.data);
+        this.images.push({ src: URL.createObjectURL(response.data), alt: 'Bottom Sensors', title: 'Bottom Sensors' });
       } catch (error) {
         console.error('Error fetching bottom sensors:', error);
       }
@@ -204,13 +160,14 @@ export default {
     async fetchTopStreets() {
       try {
         const response = await axios.get('http://127.0.0.1:5000/max_top_street', {
+
           params: {
-            timestep: this.roundMinutesToNearest5(this.topStreetsTimestep),
+            timestep: this.roundMinutesToNearest5(this.startTime),
             n: this.topNStreets
           },
           responseType: 'blob'
         });
-        this.topStreetsImage = URL.createObjectURL(response.data);
+        this.images.push({ src: URL.createObjectURL(response.data), alt: 'Top Streets', title: 'Top Streets' });
       } catch (error) {
         console.error('Error fetching top streets:', error);
       }
@@ -219,12 +176,12 @@ export default {
       try {
         const response = await axios.get('http://127.0.0.1:5000/min_bottom_street', {
           params: {
-            timestep: this.roundMinutesToNearest5(this.bottomStreetsTimestep),
+            timestep: this.roundMinutesToNearest5(this.startTime),
             n: this.bottomNStreets
           },
           responseType: 'blob'
         });
-        this.bottomStreetsImage = URL.createObjectURL(response.data);
+        this.images.push({ src: URL.createObjectURL(response.data), alt: 'Bottom Streets', title: 'Bottom Streets' });
       } catch (error) {
         console.error('Error fetching bottom streets:', error);
       }
@@ -234,12 +191,12 @@ export default {
         const response = await axios.get('http://127.0.0.1:5000/plot_sensor_speed', {
           params: {
             sensorid: this.sensorid,
-            start_time: this.roundMinutesToNearest5(this.sensorStartTime),
-            end_time: this.roundMinutesToNearest5(this.sensorEndTime)
+            start_time: this.roundMinutesToNearest5(this.startTime),
+            end_time: this.roundMinutesToNearest5(this.endTime)
           },
           responseType: 'blob'
         });
-        this.sensorSpeedImage = URL.createObjectURL(response.data);
+        this.images.push({ src: URL.createObjectURL(response.data), alt: 'Sensor Speed', title: 'Sensor Speed' });
       } catch (error) {
         console.error('Error fetching sensor speed:', error);
       }
@@ -249,12 +206,12 @@ export default {
         const response = await axios.get('http://127.0.0.1:5000/plot_street_speed', {
           params: {
             street: this.street,
-            start_time: this.roundMinutesToNearest5(this.streetStartTime),
-            end_time: this.roundMinutesToNearest5(this.streetEndTime)
+            start_time: this.roundMinutesToNearest5(this.startTime),
+            end_time: this.roundMinutesToNearest5(this.endTime)
           },
           responseType: 'blob'
         });
-        this.streetSpeedImage = URL.createObjectURL(response.data);
+        this.images.push({ src: URL.createObjectURL(response.data), alt: 'Street Speed', title: 'Street Speed' });
       } catch (error) {
         console.error('Error fetching street speed:', error);
       }
@@ -269,37 +226,48 @@ export default {
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: #1c1e24;
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .text-center {
   text-align: center;
+  margin-bottom: 20px;
+  color: #ffffff;
 }
 
 .card {
-  background-color: #f9f9f9;
+  background-color: #282c34;
   padding: 20px;
   margin: 20px 0;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card h2 {
-  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .card form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card .form-group {
   display: flex;
   flex-direction: column;
 }
 
 .card label {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  color: #bbb;
 }
 
 .card input {
-  padding: 8px;
-  border: 1px solid #ccc;
+  padding: 10px;
+  border: none;
   border-radius: 4px;
+  background-color: #3a3f47;
+  color: #fff;
   margin-bottom: 20px;
 }
 
@@ -310,15 +278,24 @@ export default {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  grid-column: span 2;
 }
 
 .card button:hover {
   background-color: #0056b3;
 }
 
+.result-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
 .result-image {
   max-width: 100%;
-  margin-top: 20px;
+  margin-top: 10px;
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 </style>

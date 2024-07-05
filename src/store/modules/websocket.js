@@ -58,8 +58,6 @@ const actions = {
         return obj;
       }, {});
 
-    console.log(sortedStreetAverages);
-
     // 使用排序后的数据进行 commit
     commit('SET_STREET_AVERAGES', sortedStreetAverages);
     commit('SET_OVERALL_AVERAGE_SPEED', data.overall_average_speed);
