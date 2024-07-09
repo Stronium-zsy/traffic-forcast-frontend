@@ -167,7 +167,6 @@ export default {
       this.overallAverageSpeed = overallAverageSpeed;
     },
     updateChartData() {
-      console.log(this.overallAverageSpeed);
       const timestamp = new Date().toISOString(); // 使用 ISO 格式的时间戳
       if (this.overallAverageSpeed === 0) return;
       // 添加新数据点到图表

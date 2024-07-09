@@ -1,41 +1,41 @@
 <template>
   <div class="container">
-    <h1 class="text-center">Analysis Data Dashboard</h1>
+    <h1 class="text-center">数据统计面板</h1>
     <div class="card">
       <form @submit.prevent="fetchData">
         <div class="form-group">
-          <label>Start Time:</label>
+          <label>数据统计开始日期:</label>
           <input type="datetime-local" v-model="startTime" required>
         </div>
         <div class="form-group">
-          <label>End Time:</label>
+          <label>数据统计结束日期:</label>
           <input type="datetime-local" v-model="endTime" required>
         </div>
         <div class="form-group">
-          <label>Top N Sensors:</label>
+          <label>平均速度前N的传感器ID:</label>
           <input type="number" v-model.number="topNSensors">
         </div>
         <div class="form-group">
-          <label>Bottom N Sensors:</label>
+          <label>平均速度后N的传感器ID:</label>
           <input type="number" v-model.number="bottomNSensors">
         </div>
         <div class="form-group">
-          <label>Top N Streets:</label>
+          <label>平均速度前N的街道名称:</label>
           <input type="number" v-model.number="topNStreets">
         </div>
         <div class="form-group">
-          <label>Bottom N Streets:</label>
+          <label>平均速度后N的街道名称:</label>
           <input type="number" v-model.number="bottomNStreets">
         </div>
         <div class="form-group">
-          <label>Sensor ID:</label>
+          <label>传感器ID:</label>
           <input type="text" v-model="sensorid" placeholder="Sensor ID">
         </div>
         <div class="form-group">
-          <label>Street:</label>
+          <label>街道名称:</label>
           <input type="text" v-model="street" placeholder="Street">
         </div>
-        <button type="submit">Fetch Data</button>
+        <button type="submit">统计数据</button>
       </form>
 
       <div v-if="images.length">
@@ -54,8 +54,8 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      startTime: '2017-01-01 00:00:00',
-      endTime: '2017-01-01 00:00:00',
+      startTime: '2024-01-01 00:00:00',
+      endTime: '2024-01-01 00:00:00',
       topNSensors: null,
       bottomNSensors: null,
       topNStreets: null,
@@ -222,7 +222,7 @@ export default {
 
 <style>
 .container {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;

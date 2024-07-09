@@ -6,9 +6,11 @@ import user from './modules/user'
 import tagsView from './modules/tagsView'
 import permission from './modules/permission'
 import settings from './modules/settings'
-import map_data from './modules/map_data'  // 修改导入名称为 map_data
+import map_data from './modules/map_data'
+import predictMapData from './modules/predictMapData'
+import predictWebSocket from './modules/predictWebSocket'
 import getters from './getters'
-import websocket from './modules/websocket';
+import websocket from "./modules/websocket";
 
 Vue.use(Vuex)
 
@@ -20,10 +22,13 @@ const store = new Vuex.Store({
     tagsView,
     permission,
     settings,
+    map_data,
     websocket,
-    map_data  // 使用 map_data 作为模块名称
+    predictMapData,
+    predictWebSocket,
   },
   getters
 })
 
 export default store
+
